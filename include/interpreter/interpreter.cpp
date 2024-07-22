@@ -44,6 +44,7 @@ int Interpreter::interpretLine(int lineNum) {
 	for (int i = 0; i < this->fileContent.at(lineNum).size(); i++) {
 		char lineChar = this->fileContent.at(lineNum).at(i);
 		std::cout << lineChar << " " << this->scriptArray.at(this->arrayPos) << std::endl;
+
 		if (lineChar == '+') { // increments a value inside the "scriptArray" array.
 			if (this->scriptArray.at(this->arrayPos) == 127) {
 				this->scriptArray.at(this->arrayPos) = 0;
@@ -77,10 +78,25 @@ int Interpreter::interpretLine(int lineNum) {
 			}
 		}
 		else if (lineChar == '.') { // handles writting to console.
-			std::cout << char(this->scriptArray.at(this->arrayPos)) << std::endl;
+			if (i < this->fileContent.at(lineNum).length()-1) {
+				if (this->fileContent.at(lineNum).at(i + 1) == '&') { // prints array position.
+					std::cout << this->arrayPos << std::endl;
+					i++;
+				}
+				else if (this->fileContent.at(lineNum).at(i + 1) == '!') { // prints the value of the selected index in the "scriptArray" array.
+					std::cout << this->scriptArray.at(this->arrayPos) << std::endl;
+					i++;
+				}
+				else { // prints the character of the selected index in the "scriptArray" array.
+					std::cout << char(this->scriptArray.at(this->arrayPos)) << std::endl;
+				}
+			}
+			else { // prints the character of the selected index in the "scriptArray" array.
+				std::cout << char(this->scriptArray.at(this->arrayPos)) << std::endl;
+			}
 		}
 		else if (lineChar == '[') { // handles entering while loops.
-			LoopInfo loopInfo = { this->arrayPos, {lineNum, i}};
+			LoopInfo loopInfo = { this->arrayPos, 0, {lineNum, i}};
 			this->loops.push_back(loopInfo);
 			this->runningLoops++;
 		}
@@ -96,10 +112,22 @@ int Interpreter::interpretLine(int lineNum) {
 			}
 		}
 		else if (lineChar == '{') { // handles entering for loops.
-
+			LoopInfo loopInfo = { this->arrayPos, this->scriptArray.at(this->arrayPos), {lineNum, i} };
+			this->loops.push_back(loopInfo);
+			this->runningLoops++;
 		}
 		else if (lineChar == '}') { // handles continuing or exiting for loops.
-
+			LoopInfo& loopInfo = this->loops.at(this->runningLoops - 1); // took me forever to figure out i needed to reference the LoopInfo instead of copy it to modify the iterator.
+			std::cout << loopInfo.iterator << std::endl;
+			if (loopInfo.iterator == 0) {
+				this->loops.erase(loops.begin() + this->runningLoops - 1);
+				this->runningLoops--;
+			}
+			else {
+				this->lineNum = loopInfo.lineBegin.at(0);
+				i = loopInfo.lineBegin.at(1);
+				loopInfo.iterator--;
+			}
 		}
 		else if (lineChar == '*') { // memory allocation / deallocation.
 			// use it once to allocate the memory. then use it again on the same address to deallocate it.

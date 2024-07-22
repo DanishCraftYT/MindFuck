@@ -7,6 +7,7 @@ public:
 	int interpretLine(int lineNum);
 	struct LoopInfo {
 		int arrayPos;
+		int iterator; // used only by for loops.
 		std::array<int, 2> lineBegin; // [lineNum, charNum].
 	};
 private:

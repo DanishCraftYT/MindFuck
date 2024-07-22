@@ -37,5 +37,7 @@
     <None Include="test.mfs" />
     <None Include="docs\interpreter.md" />
     <None Include="docs\lexer.md" />
+    <None Include="README.md" />
+    <None Include="docs\MindFuck.md" />
   </ItemGroup>
 </Project>

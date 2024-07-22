@@ -7,9 +7,10 @@ since then i have learned C++ which has allowed me to do things i otherwise coul
 
 # Features
 * basic operations (+-<>).<br>
+* more printing operations.<br>
 * loops (while loops: [], for loops: {}).<br>
 * nested loops.<br>
 
-# Interpreter Docs
+# Docs
 
-* [Interpreter / lexer docs](https://github.com/DanishCraftYT/MindFuck/tree/master/docs).<br>
+* [docs](https://github.com/DanishCraftYT/MindFuck/tree/master/docs).<br>
