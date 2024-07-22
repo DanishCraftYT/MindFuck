@@ -54,7 +54,7 @@ example:<br>
 { // runs for loop 6 times<br>
 	+++++<br>
 }<br>
-..! // prints the letter the element contains then the number the letter represents in UTF-8. in case it should print:<br>
+..! // prints the letter the element contains then the number the letter represents in UTF-8. in this case it should print:<br>
 "<br>
 (<br>
 41<br>
