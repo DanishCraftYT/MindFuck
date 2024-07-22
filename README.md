@@ -1,5 +1,5 @@
 # Overview
-a better version of BrainFuck!<br>
+a better version of BrainFuck! "MindFuck" is built in C++ using Visual Studio 2022.<br>
 
 # MindFuckPython?
 originally i wrote "MindFuck" in Python however that was a while ago and my programming skills where still awful so i waited till now with making a new version.
