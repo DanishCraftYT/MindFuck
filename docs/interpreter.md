@@ -26,6 +26,13 @@ contains infomation about loops in MindFuck.<br>
 * int arrayPos - the current index is used as the loop iterator.<br>
 * std::array<int, 2> lineBegin - contains infomation about the line and char number of when the loop started (position of "[").<br>
 
+## public struct ArrayElementInfo
+contains infomation about each element in the "scriptArray" array.<br>
+
+### varibles
+* int value - the value of the array element.<br>
+* std::string funcCode - contains the code from a function.<br>
+
 ## private Lexer lexer
 contains the lexer used by the interpreter.<br>
 

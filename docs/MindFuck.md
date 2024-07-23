@@ -45,8 +45,7 @@ example:<br>
 
 for loops will keep a reference to the iterator so you can change the element without having to worry about infinite loops
 however it should be noted that it's not the case for nested for loops as they will run multiple times so any change in the
-iterator could result in the for loop running more or less times than intended next time the nested for loop executes. for
-loops may also result in cleaner code as there is no need for moving to different elements in the array.<br>
+iterator could result in the for loop running more or less times than intended next time the nested for loop executes.<br>
 
 for loops use curly brackets: "{}". the for loops will copy the current element and use it as a iterator.<br>
 example:<br>
