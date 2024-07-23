@@ -10,6 +10,7 @@ since then i have learned C++ which has allowed me to do things i otherwise coul
 * more printing operations.<br>
 * loops (while loops: [], for loops: {}).<br>
 * nested loops.<br>
+* functions.<br>
 
 # Docs
 
