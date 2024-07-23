@@ -29,8 +29,8 @@ Interpreter::Interpreter(std::string pathToScript, int arraySize, int lineNum) {
 int Interpreter::interpretFile() {
 	// loops through the entire file.
 	this->lineNum--;
-	while (this->lineNum < this->fileContent.size()) {
-		if (!this->interpretLine(this->lineNum)) {
+	for (this->lineNum; this->lineNum < this->fileContent.size(); this->lineNum) {
+		if (!this->interpretCode(this->fileContent.at(this->lineNum))) {
 			return 0;
 		}
 		this->lineNum++;
@@ -39,13 +39,14 @@ int Interpreter::interpretFile() {
 	return 1;
 }
 
-int Interpreter::interpretLine(int lineNum) {
+int Interpreter::interpretCode(std::string code, int offset) {
 	// loops through the line.
-	for (int i = 0; i < this->fileContent.at(lineNum).size(); i++) {
-		char lineChar = this->fileContent.at(lineNum).at(i);
-		std::cout << lineChar << " " << this->scriptArray.at(this->arrayPos).value << std::endl;
+	for (int i = offset; i < code.length(); i++) {
+		ArrayElementInfo& elementInfo = this->scriptArray.at(this->arrayPos); // get's the array element.
+		char lineChar = code.at(i);
+		//std::cout << lineChar << " " << this->scriptArray.at(this->arrayPos).value << std::endl;
 
-		if (lineChar == '+') { // increments a value inside the "scriptArray" array.
+		if (lineChar == '+' && elementInfo.value >= 0) { // increments a value inside the "scriptArray" array.
 			if (this->scriptArray.at(this->arrayPos).value == 127) {
 				this->scriptArray.at(this->arrayPos).value = 0;
 			}
@@ -53,7 +54,7 @@ int Interpreter::interpretLine(int lineNum) {
 				this->scriptArray.at(this->arrayPos).value++;
 			}
 		}
-		else if (lineChar == '-') { // decrements a value inside the "scriptArray" array.
+		else if (lineChar == '-' && elementInfo.value >= 0) { // decrements a value inside the "scriptArray" array.
 			if (this->scriptArray.at(this->arrayPos).value == 0) {
 				this->scriptArray.at(this->arrayPos).value = 127;
 			}
@@ -88,82 +89,49 @@ int Interpreter::interpretLine(int lineNum) {
 					i++;
 				}
 				else { // prints the character of the selected index in the "scriptArray" array.
-					std::cout << char(this->scriptArray.at(this->arrayPos).value) << std::endl;
+					std::cout << char(this->scriptArray.at(this->arrayPos).value);
 				}
 			}
 			else { // prints the character of the selected index in the "scriptArray" array.
-				std::cout << char(this->scriptArray.at(this->arrayPos).value) << std::endl;
+				std::cout << char(this->scriptArray.at(this->arrayPos).value);
 			}
 		}
 		else if (lineChar == '[') { // handles entering while loops.
-			LoopInfo loopInfo = { this->arrayPos, 0, {lineNum, i}};
-			this->loops.push_back(loopInfo);
-			this->runningLoops++;
-		}
-		else if (lineChar == ']') { // handles exiting or continuing a while loop.
-			LoopInfo loopInfo = this->loops.at(this->runningLoops-1);
-			if (this->scriptArray.at(loopInfo.arrayPos).value == 0) {
-				this->loops.erase(loops.begin() + this->runningLoops-1);
-				this->runningLoops--;
-			}
-			else {
-				this->lineNum = loopInfo.lineBegin.at(0);
-				i = loopInfo.lineBegin.at(1);
+			std::string loopCode = this->findCode('[', ']', lineNum, i);
+			while (this->scriptArray.at(this->arrayPos).value != 0) {
+				this->interpretCode(loopCode);
 			}
 		}
 		else if (lineChar == '{') { // handles entering for loops.
-			LoopInfo loopInfo = { this->arrayPos, this->scriptArray.at(this->arrayPos).value, {lineNum, i} };
-			this->loops.push_back(loopInfo);
-			this->runningLoops++;
-		}
-		else if (lineChar == '}') { // handles continuing or exiting for loops.
-			LoopInfo& loopInfo = this->loops.at(this->runningLoops - 1); // took me forever to figure out i needed to reference the LoopInfo instead of copy it to modify the iterator.
-			loopInfo.iterator--; // decremented here to avoid the loop running an extra time.
-			if (loopInfo.iterator == 0) {
-				this->loops.erase(loops.begin() + this->runningLoops - 1);
-				this->runningLoops--;
-			}
-			else {
-				this->lineNum = loopInfo.lineBegin.at(0);
-				i = loopInfo.lineBegin.at(1);
+			std::string loopCode = this->findCode('{', '}', lineNum, i);
+			for (int iterator = this->scriptArray.at(this->arrayPos).value; iterator != 0; iterator--) {
+				this->interpretCode(loopCode);
 			}
 		}
 		else if (lineChar == '(') {
 			std::string line; // used to get the line of a file.
 			bool reachedFuncEnd = false; // tells the first for loop that it has reached the end of the function.
-			ArrayElementInfo& elementInfo = this->scriptArray.at(this->arrayPos); // get's the array element which should contain a function.
-			// loops through the file until it finds the end of the function (AKA the ")" character).
-			for (int j = lineNum; j < this->fileContent.size(); j++) {
-				line = this->fileContent.at(j);
-				// loops through each chacter of the line to check if one of the characters is ")".
-				for (int k = 0; k < line.length(); k++) {
-					if (line.at(k) == '(') { // beginning parenthesis.
-						continue;
-					}
-					else if (line.at(k) == ')') { // exits both loops once the end parenthesis is reached.
-						this->lineNum = j;
-						i = k+1;
-						// removes whitespaces from the function code.
-						elementInfo.funcCode.erase(remove_if(elementInfo.funcCode.begin(), elementInfo.funcCode.end(), isspace), elementInfo.funcCode.end());
-						elementInfo.value = -1; // tells the interpreter that this value is a function.
-						reachedFuncEnd = true;
-						break;
-					}
-					else { // adds the character to the func code.
-						elementInfo.funcCode += line.at(k);
-					}
-				}
-				if (reachedFuncEnd == true) {
-					break;
-				}
-				continue;
-			}
+			elementInfo.funcCode = this->findCode('(', ')', this->lineNum, i); // finds code inside the function.
+			elementInfo.value = -1; // tells the interpreter that this value is a function.
 		}
 		else if (lineChar == ':') { // calls functions.
-
+			if (elementInfo.value != -1) { // checks if the element contains a function.
+				// ONLY ERROR IF CERTAIN PARAM IS PRESENT.
+			}
+			else {
+				// executes the function.
+				this->interpretCode(elementInfo.funcCode);
+			}
 		}
 		else if (lineChar == ';') { // unbinds a function from the current element (if a function is attached to the element).
-
+			if (elementInfo.value != -1) { // checks if the element contains a function.
+				// ONLY ERROR IF CERTAIN PARAM IS PRESENT.
+			}
+			else {
+				// unbinds function from the current element.
+				elementInfo.funcCode.clear();
+				elementInfo.value = 0;
+			}
 		}
 		else if (lineChar == '*') { // memory allocation / deallocation.
 			// use it once to allocate the memory. then use it again on the same address to deallocate it.
@@ -175,4 +143,31 @@ int Interpreter::interpretLine(int lineNum) {
 		continue;
 	}
 	return 1;
+}
+
+std::string Interpreter::findCode(char beginChar, char endChar, int& lineNum, int& charNum) {
+	std::string funcCode;
+	std::string line;
+	for (lineNum; lineNum < this->fileContent.size(); lineNum++) {
+		line = this->fileContent.at(lineNum);
+		// loops through each chacter of the line to check if one of the characters is ")".
+		for (int k = 0; k < line.length(); k++) {
+			if (line.at(k) == beginChar) { // beginning parenthesis.
+				funcCode.clear(); // prevents any characters before the parenthesis from being added to the function code string.
+				continue;
+			}
+			else if (line.at(k) == endChar) { // exits both loops once the end parenthesis is reached.
+				// removes whitespaces from the function code.
+				funcCode.erase(remove_if(funcCode.begin(), funcCode.end(), isspace), funcCode.end());
+				k++;
+				charNum = k;
+				return funcCode;
+			}
+			else { // adds the character to the func code.
+				funcCode += line.at(k);
+			}
+			continue;
+		}
+		continue;
+	}
 }

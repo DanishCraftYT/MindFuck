@@ -58,3 +58,16 @@ example:<br>
 (<br>
 41<br>
 "<br>
+
+# functions
+
+functions are used to call code repetedly.<br>
+
+functions use parenthesis: "()". to call a function. the current element has to have a function. you can use ":" to call a
+function. the current element will contain the function and won't be able to be incremented or decremented until ";" is used
+which unbinds the current element from the function and sets it to 0.<br>
+example:<br>
+(<br>
+	>+++++<<br>
+)<br>
+ ::::>.! // runs the function 4 times and should print 20<br>

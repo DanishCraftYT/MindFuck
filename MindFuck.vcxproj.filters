@@ -34,10 +34,11 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="test.mfs" />
+    <None Include="MindFuckTests\HelloWorld.mfs" />
     <None Include="docs\interpreter.md" />
     <None Include="docs\lexer.md" />
     <None Include="README.md" />
     <None Include="docs\MindFuck.md" />
+    <None Include="test.mfs" />
   </ItemGroup>
 </Project>
