@@ -1,0 +1,102 @@
+# basic operators
+
+## +
+increments a element in the array.
+
+## -
+decrements a element in the array.
+
+## >
+goes to the next element in the array.
+
+## <
+goes to the previous element in the array.
+
+# printing to console
+
+## .
+prints the letter from the current element.
+
+## .&
+prints the position of the current element in the array. this can be useful when debugging.
+
+## .!
+prints the number the letter from the current element represents. this can be useful when debugging.
+
+# while loops
+
+while loops requires you to manually decrease the iterator everytime it begins or ends a iteration.
+
+while loops use square brackets: "[]". the iterator will always be the current element.
+example:
++++++++
+[ runs the loop 7 times
+	->+++++++++<
+]> goes to the element we incremented a bunch of times in the while loop
+..! prints the letter the element contains then the number that the letter represents in UTF-8. in this case it should print:
+?
+63
+
+# for loops
+
+for loops will keep a reference to the iterator so you can change the element without having to worry about infinite loops
+however it should be noted that it's not the case for nested for loops as they will run multiple times so any change in the
+iterator could result in the for loop running more or less times than intended next time the nested for loop executes.
+
+for loops use curly brackets: "{}". the for loops will copy the current element and use it as a iterator.
+example:
+++++++
+{ runs for loop 6 times
+	+++++
+}
+..! prints the letter the element contains then the number the letter represents in UTF-8. in this case it should print:
+(
+41
+
+
+# functions
+
+functions are used to call code repetedly.
+
+functions use parenthesis: "()". to call a function. the current element has to have a function. you can use ":" to call a
+function. the current element will contain the function and won't be able to be incremented or decremented until ";" is used
+which unbinds the current element from the function and sets it to 0.
+example:
+(
+	>+++++<
+)
+ ::::>.! runs the function 4 times and should print 20
+
+# if statements
+
+if statements are used to determine if some code should run if a condition is true.
+
+if statements look like this:
+/['second element']'operator'{
+	code here.
+}
+
+(the if statement would look something like this in C++):
+if ('current element' 'operator' 'second element') {
+	// code here.
+}
+
+MindFuck supports these operators:
+== - equal to (true if 'current element' is equal to 'second element').
+!= - not equal to (true if 'current element' is not equal to 'second element').
+> - more than (true if 'current element' is higher than 'second element').
+< - less than (true if 'current element' is lower than 'second element').
+< = less than or equal to (true if 'current element' is lower than or equal to 'second element').
+>= - more than or equal to (true if 'current element' is higher than or equal to 'second element').
+
+if statement example:
++++++
+>+++<
+/[>]<{ doesn't run code
+	<.!
+}
+
+<
+/[>]>{ runs code
+	.!
+}

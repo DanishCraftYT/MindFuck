@@ -42,9 +42,10 @@ int Interpreter::interpretFile() {
 int Interpreter::interpretCode(std::string code, int offset) {
 	// loops through the line.
 	for (int i = offset; i < code.length(); i++) {
+		int currentLine = this->lineNum; // used to check if the interpreter should go to the next line or not.
 		ArrayElementInfo& elementInfo = this->scriptArray.at(this->arrayPos); // get's the array element.
 		char lineChar = code.at(i);
-		//std::cout << lineChar << " " << this->scriptArray.at(this->arrayPos).value << std::endl;
+		std::cout << lineChar << " " << this->scriptArray.at(this->arrayPos).value << std::endl;
 
 		if (lineChar == '+' && elementInfo.value >= 0) { // increments a value inside the "scriptArray" array.
 			if (this->scriptArray.at(this->arrayPos).value == 127) {
@@ -79,12 +80,12 @@ int Interpreter::interpretCode(std::string code, int offset) {
 			}
 		}
 		else if (lineChar == '.') { // handles writting to console.
-			if (i < this->fileContent.at(lineNum).length()-1) {
-				if (this->fileContent.at(lineNum).at(i + 1) == '&') { // prints array position.
+			if (i < code.length()-1) {
+				if (code.at(i + 1) == '&') { // prints array position.
 					std::cout << this->arrayPos << std::endl;
 					i++;
 				}
-				else if (this->fileContent.at(lineNum).at(i + 1) == '!') { // prints the value of the selected index in the "scriptArray" array.
+				else if (code.at(i + 1) == '!') { // prints the value of the selected index in the "scriptArray" array.
 					std::cout << this->scriptArray.at(this->arrayPos).value << std::endl;
 					i++;
 				}
@@ -133,12 +134,42 @@ int Interpreter::interpretCode(std::string code, int offset) {
 				elementInfo.value = 0;
 			}
 		}
+		else if (lineChar == '/') { // if statements.
+			int currentArrayPos = this->arrayPos;
+			std::string compare = this->findCode('[', ']', lineNum, i); // contains the index to compare against.
+			this->interpretCode(compare);
+			std::string ifOperator = code.substr(i, 2);
+			if (ifOperator.at(0) == '<' && ifOperator.at(1) != '=' && this->scriptArray.at(currentArrayPos).value < this->scriptArray.at(this->arrayPos).value) {
+				this->interpretCode(this->findCode('{', '}', lineNum, i));
+			}
+			else if (ifOperator == "<=" && this->scriptArray.at(currentArrayPos).value >= this->scriptArray.at(this->arrayPos).value) {
+				this->interpretCode(this->findCode('{', '}', lineNum, i));
+			}
+			else if (ifOperator.at(0) == '>' && ifOperator.at(1) != '=' && this->scriptArray.at(currentArrayPos).value > this->scriptArray.at(this->arrayPos).value) {
+				this->interpretCode(this->findCode('{', '}', lineNum, i));
+			}
+			else if (ifOperator == ">=" && this->scriptArray.at(currentArrayPos).value >= this->scriptArray.at(this->arrayPos).value) {
+				this->interpretCode(this->findCode('{', '}', lineNum, i));
+			}
+			else if (ifOperator == "==" && this->scriptArray.at(currentArrayPos).value == this->scriptArray.at(this->arrayPos).value) {
+				this->interpretCode(this->findCode('{', '}', lineNum, i));
+			}
+			else if (ifOperator == "!=" && this->scriptArray.at(currentArrayPos).value != this->scriptArray.at(this->arrayPos).value) {
+				this->interpretCode(this->findCode('{', '}', lineNum, i));
+			}
+			else {
+				this->findCode('{', '}', lineNum, i); // set's the line number and char number (AKA i).
+			}
+		}
 		else if (lineChar == '*') { // memory allocation / deallocation.
 			// use it once to allocate the memory. then use it again on the same address to deallocate it.
 			// use "/<num>" to get the allocated memory from a index. each index can only hold 1 number.
 		}
 		else if (lineChar == '/') { // get's allocated memory from a index.
 
+		}
+		if (currentLine != this->lineNum) { // determines if the interpreter should go to the next line or not.
+			return 1;
 		}
 		continue;
 	}

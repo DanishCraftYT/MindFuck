@@ -11,6 +11,7 @@ since then i have learned C++ which has allowed me to do things i otherwise coul
 * loops (while loops: [], for loops: {}).<br>
 * nested loops.<br>
 * functions.<br>
+* if statements.<br>
 
 # Docs
 
