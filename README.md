@@ -16,3 +16,6 @@ since then i have learned C++ which has allowed me to do things i otherwise coul
 # Docs
 
 * [docs](https://github.com/DanishCraftYT/MindFuck/tree/master/docs).<br>
+
+# Bugs
+* if statements / nested loops: may not work if code is present after a loop in the if statement or loop.<br>
