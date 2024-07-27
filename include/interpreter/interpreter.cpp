@@ -158,6 +158,7 @@ int Interpreter::interpretCode(std::string code, int offset) {
 				this->interpretCode(this->findCode('{', '}', lineNum, i));
 			}
 			else {
+				// BUG: may not work if code is present after a for loop in the if statement.
 				this->findCode('{', '}', lineNum, i); // set's the line number and char number (AKA i).
 			}
 		}
